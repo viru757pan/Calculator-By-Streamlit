@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Calculator</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        /* background: #f7d9a8; */
+        display: flex;
+        height: 600px;
+        margin: 10px;
+      }
+
+      .calculator {
+        background: #fff6e9;
+        border-radius: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        width: 320px;
+        height: 100%;
+      }
+
+      /* ===== TOP BAR ===== */
+      .top-bar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: #ffe1b2;
+        font-weight: 600;
+        color: #555;
+      }
+
+      .titleDiv {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70%;
+      }
+
+      .titleDiv .title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 10px auto;
+      }
+
+      .theme-toggle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: #ffe0b3;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        transition: background 0.4s;
+        margin: 10px;
+      }
+
+      .dark-mode .theme-toggle {
+        background: #2c2c2c;
+      }
+
+      .toggle-icon {
+        background-color: white;
+        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: background 0.4s;
+      }
+
+      .toggle-text {
+        font-weight: 600;
+        font-size: 15px;
+      }
+
+      /* ===== DISPLAY ===== */
+      .display {
+        background: #fff6e9;
+        color: #333;
+        text-align: right; /* ✅ keeps content aligned right */
+        padding: 20px;
+        margin: 0 10px;
+        font-size: 2.5em;
+        font-weight: 600;
+        min-height: 150px;
+        border-bottom: 2px solid #000;
+        word-wrap: normal;
+        white-space: nowrap; /* ✅ prevents wrapping */
+        overflow-x: auto; /* ✅ enables horizontal scrolling if needed */
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end; /* ✅ pushes text to bottom of display */
+        align-items: flex-end; /* ✅ ensures text stays to the right */
+      }
+
+      #display {
+        display: inline-block;
+        text-align: right; /* ✅ ensures text inside is right aligned */
+        width: 100%;
+      }
+
+      .display::-webkit-scrollbar {
+        display: none;
+      }
+
+      .previous {
+        font-size: 1em;
+        color: #8d8d8d;
+      }
+
+      /* ===== BUTTONS ===== */
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 15px;
+        background: #fff6e9;
+      }
+
+      button {
+        border: none;
+        border-radius: 12px;
+        font-size: 1.3em;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 20px 15px;
+        transition: 0.2s;
+        background: #f3c98b;
+        color: #000;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+      }
+
+      .operator {
+        background: #f4b86c;
+        color: #fff;
+      }
+
+      .equal {
+        background: linear-gradient(to bottom, #ffc15e, #f4a261);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      /* ===== DARK THEME ===== */
+      /* .dark-mode {
+        background: #1d1d1d;
+      } */
+
+      .dark-mode .calculator {
+        background: #1d1d1d;
+      }
+
+      .dark-mode .top-bar {
+        background: #2b2b2b;
+        color: #eee;
+      }
+
+      .dark-mode .toggle span {
+        color: #ddd;
+      }
+
+      .dark-mode .display {
+        background: #1d1d1d;
+        color: #fff;
+        border-bottom: 2px solid #fff;
+      }
+
+      .dark-mode .buttons {
+        background: #1d1d1d;
+      }
+
+      .dark-mode button {
+        background: #4a3f35;
+        color: #f9f9f9;
+      }
+
+      .dark-mode .operator {
+        background: #e1a85c;
+        color: #fff;
+      }
+
+      .dark-mode .equal {
+        background: linear-gradient(to bottom, #ffb84d, #e38f2f);
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(255, 193, 93, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator" id="calc">
+      <div class="top-bar">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <div class="toggle-icon" id="icon">🌙</div>
+          <span class="toggle-text" id="toggleText"></span>
+        </div>
+        <div class="titleDiv">
+          <h3 class="title">Calculator</h3>
+        </div>
+      </div>
+
+      <div class="display">
+        <div class="previous" id="prevDisplay"></div>
+        <div id="display">0</div>
+      </div>
+
+      <div class="buttons">
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="deleteLast()">DEL</button>
+        <button onclick="appendInput('%')">%</button>
+        <button class="operator" onclick="appendInput('/')">/</button>
+
+        <button onclick="appendInput('7')">7</button>
+        <button onclick="appendInput('8')">8</button>
+        <button onclick="appendInput('9')">9</button>
+        <button class="operator" onclick="appendInput('*')">x</button>
+
+        <button onclick="appendInput('4')">4</button>
+        <button onclick="appendInput('5')">5</button>
+        <button onclick="appendInput('6')">6</button>
+        <button class="operator" onclick="appendInput('-')">-</button>
+
+        <button onclick="appendInput('1')">1</button>
+        <button onclick="appendInput('2')">2</button>
+        <button onclick="appendInput('3')">3</button>
+        <button class="operator" onclick="appendInput('+')">+</button>
+
+        <button onclick="appendInput('+/-')">+/-</button>
+        <button onclick="appendInput('0')">0</button>
+        <button onclick="appendInput('.')">.</button>
+        <button class="equal" onclick="calculateResult()">=</button>
+      </div>
+    </div>
+
+    <script>
+      let currentInput = "";
+      let previousInput = "";
+      const display = document.getElementById("display");
+      const prevDisplay = document.getElementById("prevDisplay");
+      const calc = document.getElementById("calc");
+      const themeText = document.getElementById("themeText");
+
+      function appendInput(value) {
+        if (value === "+/-") {
+          currentInput = currentInput.startsWith("-")
+            ? currentInput.slice(1)
+            : "-" + currentInput;
+        } else {
+          currentInput += value;
+        }
+
+        display.innerText = currentInput || "0";
+
+        // 👇 Auto-scroll to the right
+        const displayDiv = document.querySelector(".display");
+        displayDiv.scrollLeft = displayDiv.scrollWidth;
+      }
+
+      function clearDisplay() {
+        currentInput = "";
+        previousInput = "";
+        display.innerText = "0";
+        prevDisplay.innerText = "";
+      }
+
+      function calculateResult() {
+        try {
+          previousInput = currentInput;
+
+          // ✅ Replace 'x' with '*' and remove leading zeros
+          let expression = currentInput.replace(/x/g, "*");
+
+          // ✅ Remove leading zeros before numbers (but keep 0.x decimal)
+          expression = expression.replace(/\b0+(\d+)/g, "$1");
+
+          const result = eval(expression);
+          display.innerText = result;
+          prevDisplay.innerText = previousInput;
+          currentInput = String(result);
+
+          // ✅ Scroll to right for long result
+          const displayDiv = document.querySelector(".display");
+          displayDiv.scrollLeft = displayDiv.scrollWidth;
+        } catch (e) {
+          display.innerText = "Error";
+          currentInput = "";
+        }
+      }
+
+      function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById("icon");
+        const text = document.getElementById("toggleText");
+
+        body.classList.toggle("dark-mode");
+
+        if (body.classList.contains("dark-mode")) {
+          icon.textContent = "🌞";
+        } else {
+          icon.textContent = "🌙";
+        }
+      }
+
+      function deleteLast() {
+        currentInput = currentInput.slice(0, -1);
+        display.innerText = currentInput || "0";
+      }
+    </script>
+  </body>
+</html>
