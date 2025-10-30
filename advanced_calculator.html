@@ -259,17 +259,27 @@
       const themeText = document.getElementById("themeText");
 
       function appendInput(value) {
+        const operators = ["+", "-", "*", "/", "%"];
+
+        // Handle +/-
         if (value === "+/-") {
           currentInput = currentInput.startsWith("-")
             ? currentInput.slice(1)
             : "-" + currentInput;
         } else {
+          // Prevent two operators in a row
+          const lastChar = currentInput.slice(-1);
+
+          if (operators.includes(lastChar) && operators.includes(value)) {
+            return; // ❌ Ignore second operator
+          }
+
           currentInput += value;
         }
 
         display.innerText = currentInput || "0";
 
-        // 👇 Auto-scroll to the right
+        // 👇 Auto-scroll to the right for long numbers
         const displayDiv = document.querySelector(".display");
         displayDiv.scrollLeft = displayDiv.scrollWidth;
       }
